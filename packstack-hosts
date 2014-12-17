@@ -8,8 +8,12 @@ import json
 
 
 def get_inventory(cfg):
+    '''Generate an ansible-compatible inventory object
+    from the packstack configuration file.'''
+
     inv = {}
 
+    # each of these is a single host
     for host in ['controller', 'amqp', 'storage',
                  'mariadb', 'mongodb']:
         inv[host] = {
@@ -17,16 +21,19 @@ def get_inventory(cfg):
                               'config_{host}_host'.format(host=host))],
         }
 
+    # but there may be multiple network and/or compute hosts
     for host in ['network', 'compute']:
         inv[host] = {
             'hosts': cfg.get('general',
-                              'config_{host}_hosts'.format(
-                                  host=host)).split(','),
+                             'config_{host}_hosts'.format(
+                                 host=host)).split(','),
         }
 
     return inv
 
+
 def get_meta(cfg):
+    '''return the packstack [general] configuration as a dictionary.'''
     return dict(cfg.items('general'))
 
 
@@ -39,6 +46,7 @@ def parse_args():
     p.add_argument('--list',
                    action='store_true')
     return p.parse_args()
+
 
 def main():
     args = parse_args()
