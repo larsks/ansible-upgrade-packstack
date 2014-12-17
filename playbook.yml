@@ -7,6 +7,9 @@
 
 - include: check_all.yml
 
+- include: prereq.yml
+- include: check_all.yml
+
 - include: keystone.yml
 - include: check_all.yml
 

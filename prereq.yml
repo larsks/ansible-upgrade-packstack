@@ -1,0 +1,21 @@
+- hosts: all
+  tags:
+    - validate
+  tasks:
+    - yum: name={{item}} state=latest
+      with_items:
+        - openstack-selinux
+        - openstack-utils
+    - yum: name=mariadb-galera-server state=latest
+      notify: restart mariadb
+    - yum: name=rabbitmq-server state=latest
+      notify: restart rabbitmq
+  handlers:
+    - name: restart mariadb
+      service: name=mariadb state=restarted
+    - name: restart rabbitmq
+      service: name=rabbitmq-server state=restarted
+      notify: restart nova
+    - name: restart nova
+      command: openstack-service restart nova
+
