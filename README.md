@@ -20,3 +20,13 @@ When you come back, you should have a functional (*) Juno deployment.
 
 [1175502]: https://bugzilla.redhat.com/show_bug.cgi?id=1175502
 
+## Functional testing
+
+These playbooks will run `check_all.yml` between each major component
+upgrade to verify that your OpenStack environment is still minimally
+functional.  This will run the `openstack-validate` script, which
+boots a `cirros` instance and verifies that it becomes `ACTIVE`.
+
+This script does not exercise all OpenStack components, but it
+acts as a reasonable canary for a variety of problems.
+
