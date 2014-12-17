@@ -2,3 +2,6 @@
   tasks:
     - name: upgrade all packages
       yum: name=* state=latest
+    - name: restart openstack services
+      command: openstack-service restart
+
