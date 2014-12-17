@@ -30,3 +30,11 @@ boots a `cirros` instance and verifies that it becomes `ACTIVE`.
 This script does not exercise all OpenStack components, but it
 acts as a reasonable canary for a variety of problems.
 
+## Interesting bits
+
+The `packstack-hosts` file included in this directory is an Ansible
+[dynamic inventory][] script that reads your Packstack answers file to
+determine the hosts involved in your OpenStack deployment.
+
+[dynamic inventory]: http://docs.ansible.com/intro_dynamic_inventory.html
+
