@@ -1,15 +1,8 @@
 - hosts: controller
   tasks:
-    - name: verify that keystone is functioning
-      shell: ". /root/keystonerc_admin; keystone user-list"
-    - name: verify that glance is functioning (1)
-      shell: ". /root/keystonerc_admin; glance image-list"
-    - name: verify that glance is functioning (2)
-      shell: ". /root/keystonerc_admin; glance image-download cirros > /dev/null"
-    - name: verify that cinder is functioning
-      shell: ". /root/keystonerc_admin; cinder list"
-    - name: verify that neutron is functioning
-      shell: ". /root/keystonerc_admin; neutron net-list"
-    - name: verify that nova is functioning
-      shell: ". /root/keystonerc_admin; nova list"
-
+    - name: install validation script
+      copy: src=openstack-validate dest=/usr/local/bin/openstack-validate
+            mode="0755"
+    - file: path=/root/keystonerc_demo state=file
+    - name: verify that openstack is minimally functional
+      command: /usr/local/bin/openstack-validate /root/keystonerc_demo
