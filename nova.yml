@@ -1,0 +1,26 @@
+- hosts:
+    - controller
+  tags:
+    - nova
+  tasks:
+    - file: path=/var/log/nova/nova-manage.log
+            owner=nova
+            group=nova
+            state=touch
+    - name: stop nova services
+      command: openstack-service stop nova
+    - name: upgrade nova
+      yum: name=openstack-nova state=latest
+    - name: ugprade nova database
+      command: runuser -u nova nova-manage db sync
+    - name: cap rpc version for icehouse compatability
+      ini_file: dest=/etc/nova/nova.conf
+                section=upgrade_levels
+                option={{item}}
+                value=icehouse
+      with_items:
+        - compute
+        - conductor
+    - name: start nova services
+      command: openstack-service start nova
+

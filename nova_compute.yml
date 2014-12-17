@@ -1,0 +1,39 @@
+- hosts:
+    - compute
+  tags:
+    - nova
+    - compute
+  tasks:
+    - name: stop nova services
+      command: openstack-service stop nova
+    - name: upgrade nova
+      yum: name=openstack-nova-compute state=latest
+    - name: cap rpc version for icehouse compatability
+      ini_file: dest=/etc/nova/nova.conf
+                section=upgrade_levels
+                option={{item}}
+                value=icehouse
+      with_items:
+        - compute
+        - conductor
+    - name: start nova services
+      command: openstack-service start nova
+
+- hosts:
+    - controller
+    - compute
+  tags:
+    - nova
+    - compute
+  tasks:
+    - name: remove rpc version caps
+      ini_file: dest=/etc/nova/nova.conf
+                section=upgrade_levels
+                option={{item}}
+                state=absent
+      with_items:
+        - compute
+        - conductor
+    - name: restart nova services
+      command: openstack-service restart nova
+

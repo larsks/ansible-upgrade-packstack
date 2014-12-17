@@ -1,0 +1,17 @@
+- hosts: storage
+  tags:
+    - glance
+  tasks:
+    - file: path=/var/log/glance/glance-manage.log
+            owner=glance
+            group=glance
+            state=touch
+    - name: stop glance service
+      command: openstack-service stop glance
+    - name: upgrade glance
+      yum: name=openstack-glance state=latest
+    - name: ugprade glance database
+      command: runuser -u glance glance-manage db sync
+    - name: start glance services
+      command: openstack-service start glance
+

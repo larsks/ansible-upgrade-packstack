@@ -1,0 +1,19 @@
+- hosts: storage
+  tags:
+    - cinder
+  tasks:
+    - file: path=/var/log/cinder/cinder-manage.log
+            owner=cinder
+            group=cinder
+            state=touch
+    - name: stop cinder services
+      command: openstack-service stop cinder
+    - name: upgrade cinder
+      yum: name=openstack-cinder state=latest
+    - name: install missing dependencies
+      yum: name=python-taskflow state=latest
+    - name: ugprade cinder database
+      command: runuser -u cinder cinder-manage db sync
+    - name: start cinder services
+      command: openstack-service start cinder
+

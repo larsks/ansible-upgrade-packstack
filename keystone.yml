@@ -1,0 +1,17 @@
+- hosts: controller
+  tags:
+    - keystone
+  tasks:
+    - file: path=/var/log/keystone/keystone-manage.log
+            owner=keystone
+            group=keystone
+            state=touch
+    - name: stop keystone service
+      command: openstack-service stop keystone
+    - name: upgrade keystone
+      yum: name=openstack-keystone state=latest
+    - name: upgrade keystone database
+      command: runuser -u keystone keystone-manage db_sync
+    - name: start keystone service
+      command: openstack-service start keystone
+

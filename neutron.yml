@@ -1,0 +1,54 @@
+- hosts:
+    - controller
+    - network
+    - compute
+  tags:
+    - neutron
+  tasks:
+    - name: stop neutron services
+      command: openstack-service stop neutron
+
+- hosts:
+    - controller
+  tags:
+    - neutron
+  tasks:
+    - name: upgrade neutron
+      yum: name={{item}} state=latest
+      with_items:
+        - openstack-neutron
+    - name: upgrade neutron database
+      command: >
+        neutron-db-manage --config-file /etc/neutron/neutron.conf
+        --config-file /etc/neutron/plugin.ini upgrade head
+
+- hosts:
+    - network
+  tags:
+    - neutron
+  tasks:
+    - name: upgrade neutron
+      yum: name={{item}} state=latest
+      with_items:
+        - openstack-neutron-{{config_neutron_l2_plugin}}
+        - openstack-neutron-{{config_neutron_l2_agent}}
+
+- hosts:
+    - controller
+    - network
+    - compute
+  tags:
+    - neutron
+  tasks:
+    - name: start neutron services
+      shell: openstack-service list neutron | grep -v clean | xargs systemctl start
+
+- hosts:
+    - compute
+  tags:
+    - neutron
+    - bugfix
+  tasks:
+    - name: restart nova compute
+      service: name=openstack-nova-compute state=restarted
+

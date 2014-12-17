@@ -1,0 +1,30 @@
+# vim: set ts=2 sw=2 expandtab ai :
+
+- hosts: all
+  tasks:
+    - name: add rhel-osp 6 repositories
+      command: rhos-release 6
+
+- include: check_all.yml
+
+- include: keystone.yml
+- include: check_all.yml
+
+- include: glance.yml
+- include: check_all.yml
+
+- include: cinder.yml
+- include: check_all.yml
+
+- include: neutron.yml
+- include: check_all.yml
+
+- include: nova.yml
+- include: check_all.yml
+
+- include: nova_compute.yml
+- include: check_all.yml
+
+- include: upgrade_all.yml
+- include: check_all.yml
+
