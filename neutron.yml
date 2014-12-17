@@ -13,7 +13,7 @@
   tags:
     - neutron
   tasks:
-    - name: upgrade neutron
+    - name: upgrade neutron on controller
       yum: name={{item}} state=latest
       with_items:
         - openstack-neutron
@@ -27,10 +27,20 @@
   tags:
     - neutron
   tasks:
-    - name: upgrade neutron
+    - name: upgrade neutron on network host
       yum: name={{item}} state=latest
       with_items:
         - openstack-neutron-{{config_neutron_l2_plugin}}
+        - openstack-neutron-{{config_neutron_l2_agent}}
+
+- hosts:
+    - compute
+  tags:
+    - neutron
+  tasks:
+    - name: upgrade neutron on compute nodes
+      yum: name={{item}} state=latest
+      with_items:
         - openstack-neutron-{{config_neutron_l2_agent}}
 
 - hosts:
@@ -41,14 +51,15 @@
     - neutron
   tasks:
     - name: start neutron services
-      shell: openstack-service list neutron | grep -v clean | xargs systemctl start
+      shell: openstack-service start neutron
 
 - hosts:
     - compute
   tags:
     - neutron
-    - bugfix
   tasks:
+    - name: restart nova compute
+      service: name=openstack-nova-compute state=restarted
     - name: restart nova compute
       service: name=openstack-nova-compute state=restarted
 
